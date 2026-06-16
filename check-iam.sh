@@ -1,4 +1,30 @@
 #!/bin/bash
+set -uo pipefail
+
+if [[ ! -f "./bootstrap.sh" ]]
+then
+    echo
+    echo "ERROR: bootstrap.sh not found"
+    echo
+    exit 1
+fi
+
+if [[ ! -f "./config.conf" ]]
+then
+    echo
+    echo "Bootstrap not initialized. Running ./bootstrap.sh"
+    echo
+    chmod +x bootstrap.sh
+    ./bootstrap.sh
+
+    if [[ ! -f "./config.conf" ]]
+    then
+        echo
+        echo "ERROR: bootstrap failed"
+        echo
+        exit 1
+    fi	    
+fi
 
 source ./common.sh
 source ./config.conf
@@ -214,12 +240,22 @@ generate_html "$REPORT_FILE" "$HTML_FILE"
 # S3 UPLOAD
 ###############################################################################
 
-create_bucket_if_needed
+if validate_bucket
+then
 
-upload_reports \
-IAM \
-"$REPORT_FILE" \
-"$HTML_FILE"
+	upload_reports \
+	IAM \
+	"$REPORT_FILE" \
+	"$HTML_FILE"
+
+else
+	
+	echo
+	echo "ERROR: Report upload skipped"
+	echo
+	exit 1 
+
+fi
 
 ###############################################################################
 # COMPLETE

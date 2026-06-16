@@ -2,7 +2,8 @@
 
 set -uo pipefail
 
-DATE=$(date '+%Y-%m-%d %H:%M:%S')
+export TZ=Asia/Kolkata
+DATE=$(date '+%Y-%m-%d %H:%M:%S IST')
 DATE_FOLDER=$(date '+%Y-%m-%d')
 
 ACCOUNT_ID=$(aws sts get-caller-identity \
@@ -136,18 +137,38 @@ validate_bucket() {
         --bucket "$REPORT_BUCKET" \
         >/dev/null 2>&1
 
-    if [[ $? -ne 0 ]]
+    if [[ $? -eq 0 ]]
+    then
+        return 0
+    fi
+
+    echo
+    echo "Report bucket missing."
+    echo "Running bootstrap.sh..."
+    echo
+
+    chmod +x bootstrap.sh
+    ./bootstrap.sh >/dev/null 2>&1
+
+    aws s3api head-bucket \
+        --bucket "$REPORT_BUCKET" \
+        >/dev/null 2>&1
+
+    if [[ $? -eq 0 ]]
     then
 
         echo
-        echo "ERROR: Report bucket does not exist:"
-        echo "$REPORT_BUCKET"
+        echo "Report bucket recreated successfully"
         echo
-        return 1
+
+        return 0
 
     fi
 
-    return 0
+    echo
+    echo "ERROR: Unable to create report bucket"
+    echo
+    return 1
 }
 
 ###############################################################################
