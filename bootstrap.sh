@@ -113,23 +113,6 @@ echo
 echo "config.conf created"
 
 ###############################################################################
-# VERIFY UPLOAD ACCESS
-###############################################################################
-
-TEST_FILE="/tmp/aws_audit_test.txt"
-
-echo "bootstrap-test" > "$TEST_FILE"
-
-aws s3 cp \
-    "$TEST_FILE" \
-    "s3://${REPORT_BUCKET}/bootstrap-test.txt" \
-    >/dev/null
-
-rm -f "$TEST_FILE"
-
-echo "S3 upload verification successful"
-
-###############################################################################
 # COMPLETE
 ###############################################################################
 

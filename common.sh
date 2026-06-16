@@ -36,7 +36,7 @@ write_result() {
     local SEVERITY="$6"
     local DETAILS="$7"
 
-    echo "\"$DATE\",\"=\"$ACCOUNT_ID\"\",\"$REGION\",\"$SERVICE\",\"$CHECK\",\"$RESOURCE\",\"$STATUS\",\"$SEVERITY\",\"$DETAILS\"" \
+    echo "\"$DATE\",\"$ACCOUNT_ID\",\"$REGION\",\"$SERVICE\",\"$CHECK\",\"$RESOURCE\",\"$STATUS\",\"$SEVERITY\",\"$DETAILS\"" \
     >> "$REPORT_FILE"
 
 }

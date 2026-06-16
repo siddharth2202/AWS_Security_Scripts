@@ -2,3 +2,5 @@ reports/*.csv
 reports/*.html
 logs/*
 *.log
+config.conf
+*.bak
