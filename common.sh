@@ -52,24 +52,73 @@ generate_html() {
     local HTML="$2"
 
     {
+        PASS_COUNT=$(awk -F',' '$7 ~ /PASS/ {count++} END {print count+0}' "$CSV")
+        FAIL_COUNT=$(awk -F',' '$7 ~ /FAIL/ {count++} END {print count+0}' "$CSV")
+        TOTAL=$((PASS_COUNT + FAIL_COUNT))
+
         echo "<html>"
         echo "<head>"
+        echo "<title>AWS Security Assessment Report</title>"
+
         echo "<style>"
-        echo "body{font-family:Arial,sans-serif;margin:20px}"
-        echo "h2{color:#232f3e}"
-        echo "table{border-collapse:collapse;width:100%}"
-        echo "th{background:#232f3e;color:white}"
-        echo "th,td{border:1px solid #ddd;padding:8px;text-align:left}"
-        echo ".PASS{background:#d4edda}"
-        echo ".FAIL{background:#f8d7da}"
-        echo ".WARN{background:#fff3cd}"
+        echo "body{font-family:'Segoe UI',Arial,sans-serif;background:#f4f6f9;margin:0;padding:0;color:#333}"
+        echo ".header{background:#232F3E;color:white;padding:25px;text-align:center}"
+        echo ".header h1{margin:0;font-size:30px}"
+        echo ".container{padding:20px}"
+        echo ".cards{display:flex;gap:20px;margin-bottom:20px;flex-wrap:wrap}"
+        echo ".card{background:white;padding:15px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1);min-width:220px}"
+        echo ".card-title{font-size:12px;color:#666;text-transform:uppercase}"
+        echo ".card-value{font-size:20px;font-weight:bold;color:#232F3E}"
+        echo "table{border-collapse:collapse;width:100%;background:white;box-shadow:0 2px 8px rgba(0,0,0,0.1)}"
+        echo "th{background:#232F3E;color:white;padding:12px}"
+        echo "td{padding:10px;border-bottom:1px solid #ddd}"
+        echo "tr:nth-child(even){background:#f8f9fb}"
+        echo "tr:hover{background:#eef5ff}"
+        echo ".PASS{background:#d4edda !important}"
+        echo ".FAIL{background:#f8d7da !important}"
         echo "</style>"
+
         echo "</head>"
         echo "<body>"
 
-        echo "<h2>AWS Security Audit Report</h2>"
-        echo "<p><b>Account:</b> $ACCOUNT_ID</p>"
-        echo "<p><b>Generated:</b> $DATE</p>"
+        echo "<div class='header'>"
+        echo "<h1>AWS Security Assessment Report</h1>"
+        echo "</div>"
+
+        echo "<div class='container'>"
+
+        echo "<div class='cards'>"
+
+        echo "<div class='card'>"
+        echo "<div class='card-title'>AWS Account</div>"
+        echo "<div class='card-value'>$ACCOUNT_ID</div>"
+        echo "</div>"
+
+        echo "<div class='card'>"
+        echo "<div class='card-title'>Generated</div>"
+        echo "<div class='card-value'>$DATE</div>"
+        echo "</div>"
+
+        echo "</div>"
+
+        echo "<div class='cards'>"
+
+        echo "<div class='card'>"
+        echo "<div class='card-title'>Total Checks</div>"
+        echo "<div class='card-value'>$TOTAL</div>"
+        echo "</div>"
+
+        echo "<div class='card'>"
+        echo "<div class='card-title'>Passed</div>"
+        echo "<div class='card-value'>$PASS_COUNT</div>"
+        echo "</div>"
+
+        echo "<div class='card'>"
+        echo "<div class='card-title'>Failed</div>"
+        echo "<div class='card-value'>$FAIL_COUNT</div>"
+        echo "</div>"
+
+        echo "</div>"
 
         echo "<table>"
 
@@ -80,7 +129,6 @@ generate_html() {
 
             if [[ $FIRST -eq 1 ]]
             then
-
                 echo "<tr>"
                 echo "<th>$c1</th>"
                 echo "<th>$c2</th>"
@@ -95,7 +143,6 @@ generate_html() {
 
                 FIRST=0
                 continue
-
             fi
 
             CLASS=""
@@ -118,6 +165,7 @@ generate_html() {
         done < "$CSV"
 
         echo "</table>"
+        echo "</div>"
         echo "</body>"
         echo "</html>"
 
@@ -125,7 +173,8 @@ generate_html() {
 
 }
 
-###############################################################################
+
+##############################################################################
 # REPORT BUCKET VALIDATION
 ###############################################################################
 
