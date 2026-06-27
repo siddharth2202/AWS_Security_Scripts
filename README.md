@@ -50,6 +50,7 @@ The framework currently supports security audits for the following AWS services:
 30. Access Analyzer
 31. Inspector
 32. WAF & Shield
+33. AWS Backups
 
 For detailed information about what each service audit checks, see:
 
